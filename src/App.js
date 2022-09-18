@@ -32,7 +32,7 @@ export default function App() {
   });
 
   useEffect(() => {
-    fetch(`/api/prices/${user}?date=${date}`)
+    fetch(`${process.env.REACT_APP_API_BASE_URL}/prices/${user}?date=${date}`)
       .then((response) => response.json())
       .then((jsonData) => setData(parseData(jsonData)))
       .catch((err) => console.log(err))
