@@ -17,12 +17,14 @@ function parseData(data) {
 export default function App() {
   const date_encoding = 'sv-SE';
 
-  const [data, setData] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [date, setDate] = useState((() => {
     const current = new Date();
     return current.toLocaleDateString(date_encoding);
-  })())
+  })());
+  const [time, setTime] = useState(new Date());
+  const [user, setUser] = useState('markus');
 
   useEffect(() => {
     const current = new Date();
@@ -30,19 +32,26 @@ export default function App() {
   });
 
   useEffect(() => {
-    fetch(`/api/prices/markus?date=${date}`)
+    fetch(`/api/prices/${user}?date=${date}`)
       .then((response) => response.json())
       .then((jsonData) => setData(parseData(jsonData)))
       .catch((err) => console.log(err))
       .finally(() => setLoading(false))
-  }, [date]);
+  }, [date, user]);
 
   return (
-    <div style={{width: '70vw', height: ''}} className="App">
-      {loading && <div>A moment please...</div>}
-      {data &&
-        <LineChart labels={data.labels} data={data.data} title='Elpriser'/>
-      }
+    <div className='App'>
+      <div className='header'>
+        <h1><span role='img'>🎉🎊🎈</span> Här är elpriserna!! <span role='img'>🎈🎊🎉</span></h1>
+        <p>Dagens datum är</p>
+        <p style={{fontWeight: 'bold'}}>{date}</p>
+      </div>
+      <div className='chart'>
+        {loading && <div>Ett ögonlock...</div>}
+        {data &&
+          <LineChart labels={data.labels} data={data.data} currentTime={time} title='Elpriser'/>
+        }
+      </div>
     </div>
   )
 }

@@ -44,21 +44,39 @@ function getOptions(title) {
       xAxis: {
         type: 'time',
         time: {
-          unit: 'minute'
+          unit: 'hour',
+          displayFormats: {
+            hour: 'HH:mm'
+          }
+        }
+      }
+    },
+    legend: {
+      labels: {
+        filter: (legendItem, chartData) => {
+          return legendItem.datasetIndex === 0
         }
       }
     },
     responsive: true,
     plugins: {
       legend: {
+        display: false,
         position: 'top',
       },
       title: {
-        display: true,
+        display: false,
         text: title,
       },
     },
   }
+}
+
+function dateCompareHours(d1, d2) {
+  return d1.getFullYear() === d2.getFullYear()
+    && d1.getMonth() === d2.getMonth()
+    && d1.getDay() === d2.getDay()
+    && d1.getHours() === d2.getHours() 
 }
 
 export default function LineChart(props) {
@@ -76,6 +94,17 @@ export default function LineChart(props) {
       labels: props.labels,
       datasets: [
         {
+          data: props.labels.map((label, index) => {
+            const currentDate = props.currentTime;
+            const labelDate = new Date(label);
+            return dateCompareHours(currentDate, labelDate) ? props.data.data[index] : null
+          }),
+          xAxisID: 'xAxis',
+          borderWidth: 5,
+          borderColor: 'black',
+          backgroundColor: 'black'
+        },
+        {
           data: props.data.data,
           label: props.data.label,
           borderColor: computeGradient(chart.ctx, chart.chartArea, props.data.data),
@@ -88,6 +117,9 @@ export default function LineChart(props) {
     setChartData(chartData);
   }, [])
 
-  console.log(chartData)
-  return <Chart ref={chartRef} options={getOptions(props.title)} type='line' data={chartData} />
+  return (
+    <div style={{width: '100%', padding: '2%'}} >
+      <Chart ref={chartRef} options={getOptions(props.title)} type='line' data={chartData} />
+    </div>
+  )
 }
