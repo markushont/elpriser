@@ -42,7 +42,7 @@ function computeGradient(ctx, area, dataPoints) {
   return gradient
 }
 
-function getOptions(title) {
+function getOptions(title, axisConfig) {
   return {
     scales: {
       xAxis: {
@@ -53,6 +53,10 @@ function getOptions(title) {
             hour: 'HH:mm'
           }
         }
+      },
+      yAxis: {
+        min: axisConfig && axisConfig.x && axisConfig.x.max,
+        max: axisConfig && axisConfig.y && axisConfig.y.max
       }
     },
     legend: {
@@ -77,7 +81,8 @@ function getOptions(title) {
 }
 
 function dateCompareHours(d1, d2) {
-  return d1.getFullYear() === d2.getFullYear()
+  return d1
+    && d1.getFullYear() === d2.getFullYear()
     && d1.getMonth() === d2.getMonth()
     && d1.getDay() === d2.getDay()
     && d1.getHours() === d2.getHours() 
@@ -101,19 +106,21 @@ export default function LineChart(props) {
           data: props.labels.map((label, index) => {
             const currentDate = props.currentTime;
             const labelDate = new Date(label);
-            return dateCompareHours(currentDate, labelDate) ? props.data.data[index] : null
+            return dateCompareHours(currentDate, labelDate) ? props.data[index] : null
           }),
           xAxisID: 'xAxis',
+          yAxisID: 'yAxis',
           borderWidth: 5,
           borderColor: 'black',
           backgroundColor: 'black'
         },
         {
-          data: props.data.data,
-          label: props.data.label,
-          borderColor: computeGradient(chart.ctx, chart.chartArea, props.data.data),
+          data: props.data,
+          label: props.dataType,
+          borderColor: computeGradient(chart.ctx, chart.chartArea, props.data),
           backgroundColor: 'rgba(53, 162, 235, 0.5)',
-          xAxisID: 'xAxis'
+          xAxisID: 'xAxis',
+          yAxisID: 'yAxis'
         }
       ]
     };
@@ -123,7 +130,7 @@ export default function LineChart(props) {
 
   return (
     <div style={{width: '100%', padding: '2%'}} >
-      <Chart ref={chartRef} options={getOptions(props.title)} type='line' data={chartData} />
+      <Chart ref={chartRef} options={getOptions(props.title, props.axisConfig)} type='line' data={chartData} />
     </div>
   )
 }

@@ -6,10 +6,14 @@ import LineChart from './GradientLineChart';
 
 function parseData(data) {
   return {
-    labels: data['today'].map(d => d['startsAt']),
-    data: {
-      label: 'kr',
+    currency: 'kr',
+    today: {
+      labels: data['today'].map(d => d['startsAt']),
       data: data['today'].map(d => d['total'])
+    },
+    tomorrow: {
+      labels: data['tomorrow'].map(d => d['startsAt']),
+      data: data['tomorrow'].map(d => d['total'])
     }
   }
 }
@@ -17,7 +21,17 @@ function parseData(data) {
 export default function App() {
   const date_encoding = 'sv-SE';
 
-  const [data, setData] = useState(null);
+  const [data, setData] = useState({
+    currency: 'kr',
+    today: {
+      labels: [],
+      data: []
+    },
+    tomorrow: {
+      labels: [],
+      data: []
+    }
+  });
   const [loading, setLoading] = useState(true);
   const [date, setDate] = useState((() => {
     const current = new Date();
@@ -39,17 +53,36 @@ export default function App() {
       .finally(() => setLoading(false))
   }, [date, user]);
 
+  const yAxisPadding = 1.1;
+  const globalMaxY = yAxisPadding * Math.max(...data.today.data, ...data.tomorrow.data);
+
+  const hasTodayData = data.today.data.length !== 0;
+  const hasTomorrowData = data.tomorrow.data.length !== 0;
+
+  const axisConfig = {
+    y: {
+      max: globalMaxY
+    }
+  }
+
+  console.log(axisConfig)
+
   return (
     <div className='App'>
       <div className='header'>
         <h1><span role='img'>🎉🎊🎈</span> Här är elpriserna!! <span role='img'>🎈🎊🎉</span></h1>
-        <p>Dagens datum är</p>
-        <p style={{fontWeight: 'bold'}}>{date}</p>
+        <p>Dagens datum är <span style={{fontWeight: 'bold'}}>{date}</span></p>
       </div>
       <div className='chart'>
         {loading && <div>Ett ögonlock...</div>}
-        {data &&
-          <LineChart labels={data.labels} data={data.data} currentTime={time} title='Elpriser'/>
+        {hasTodayData &&
+          <LineChart axisConfig={axisConfig} labels={data.today.labels} dataType={data.currency} data={data.today.data} currentTime={time} title='Elpriser'/>
+        }
+        <div>
+          <p>Och <span style={{fontWeight: 'bold'}}>imorgon</span> blir det så här:</p>
+        </div>
+        {hasTomorrowData &&
+          <LineChart axisConfig={axisConfig} labels={data.tomorrow.labels} dataType={data.currency} data={data.tomorrow.data} title='Elpriser'/>
         }
       </div>
     </div>
