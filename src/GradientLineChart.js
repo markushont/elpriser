@@ -4,22 +4,26 @@ import {
   CategoryScale,
   Chart as ChartJS,
   Legend,
+  LineController,
   LineElement,
   LinearScale,
   PointElement,
   TimeScale,
   Title,
   Tooltip,
+  registerables as registrablesJS
 } from 'chart.js';
 import React, { createRef, useEffect, useState } from "react";
 
 import { Chart } from 'react-chartjs-2';
 
+ChartJS.register(...registrablesJS);
 ChartJS.register(
   CategoryScale,
   LinearScale,
   TimeScale,
   PointElement,
+  LineController,
   LineElement,
   Title,
   Tooltip,
