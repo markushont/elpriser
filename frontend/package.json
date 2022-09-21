@@ -20,7 +20,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-  "proxy": "https://2chei2v4u2.execute-api.eu-west-1.amazonaws.com/prod",
+  "proxy": "https://api.elpriser.silberstein.se",
   "eslintConfig": {
     "extends": [
       "react-app",

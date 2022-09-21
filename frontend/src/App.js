@@ -46,7 +46,7 @@ export default function App() {
   });
 
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_BASE_URL}/prices/${user}?date=${date}`)
+    fetch(`${process.env.REACT_APP_API_BASE_URL || ''}/prices/${user}?date=${date}`)
       .then((response) => response.json())
       .then((jsonData) => setData(parseData(jsonData)))
       .catch((err) => console.log(err))
@@ -65,8 +65,6 @@ export default function App() {
     }
   }
 
-  console.log(axisConfig)
-
   return (
     <div className='App'>
       <div className='header'>
@@ -78,11 +76,15 @@ export default function App() {
         {hasTodayData &&
           <LineChart axisConfig={axisConfig} labels={data.today.labels} dataType={data.currency} data={data.today.data} currentTime={time} title='Elpriser'/>
         }
-        <div>
-          <p>Och <span style={{fontWeight: 'bold'}}>imorgon</span> blir det så här:</p>
-        </div>
-        {hasTomorrowData &&
-          <LineChart axisConfig={axisConfig} labels={data.tomorrow.labels} dataType={data.currency} data={data.tomorrow.data} title='Elpriser'/>
+        {hasTomorrowData
+          ? <div>
+              <p>Och <span style={{fontWeight: 'bold'}}>imorgon</span> blir det så här:</p>
+              <LineChart axisConfig={axisConfig} labels={data.tomorrow.labels} dataType={data.currency} data={data.tomorrow.data} title='Elpriser'/>
+            </div>
+          : !loading &&
+            <div>
+              <h2><span style={{color: 'grey'}}>Morgondagens elpriser kommer ca kl 13:00!</span></h2>
+            </div>
         }
       </div>
     </div>
