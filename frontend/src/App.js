@@ -1,7 +1,9 @@
 import './App.css';
+import "react-datepicker/dist/react-datepicker.css";
 
 import React, { useEffect, useState } from 'react';
 
+import DatePicker from "react-datepicker";
 import LineChart from './GradientLineChart';
 
 function parseData(data) {
@@ -19,7 +21,7 @@ function parseData(data) {
 }
 
 export default function App() {
-  const date_encoding = 'sv-SE';
+  const DATE_ENCODING = 'sv-SE';
 
   const [data, setData] = useState({
     currency: 'kr',
@@ -33,20 +35,12 @@ export default function App() {
     }
   });
   const [loading, setLoading] = useState(true);
-  const [date, setDate] = useState((() => {
-    const current = new Date();
-    return current.toLocaleDateString(date_encoding);
-  })());
-  const [time, setTime] = useState(new Date());
+  const [date, setDate] = useState(new Date());
+  const currentTime = new Date();
   const [user, setUser] = useState('markus');
 
   useEffect(() => {
-    const current = new Date();
-    setDate(current.toLocaleDateString(date_encoding));
-  });
-
-  useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_BASE_URL || ''}/prices/${user}?date=${date}`)
+    fetch(`${process.env.REACT_APP_API_BASE_URL || ''}/prices/${user}?date=${date.toLocaleDateString(DATE_ENCODING)}`)
       .then((response) => response.json())
       .then((jsonData) => setData(parseData(jsonData)))
       .catch((err) => console.log(err))
@@ -58,6 +52,7 @@ export default function App() {
 
   const hasTodayData = data.today.data.length !== 0;
   const hasTomorrowData = data.tomorrow.data.length !== 0;
+  const shouldLoadTomorrowData = currentTime.getDate() === date.getDate();
 
   const axisConfig = {
     y: {
@@ -69,19 +64,20 @@ export default function App() {
     <div className='App'>
       <div className='header'>
         <h1><span role='img'>🎉🎊🎈</span> Här är elpriserna!! <span role='img'>🎈🎊🎉</span></h1>
-        <p>Dagens datum är <span style={{fontWeight: 'bold'}}>{date}</span></p>
+        <p>Valt datum är</p>
+        <DatePicker popperPlacement='auto' minDate={new Date('2022-01-01')} maxDate={currentTime} selected={date} onChange={date => setDate(date)} dateFormat='yyyy-MM-dd' />
       </div>
       <div className='chart'>
         {loading && <div>Ett ögonlock...</div>}
         {hasTodayData &&
-          <LineChart axisConfig={axisConfig} labels={data.today.labels} dataType={data.currency} data={data.today.data} currentTime={time} title='Elpriser'/>
+          <LineChart axisConfig={axisConfig} labels={data.today.labels} dataType={data.currency} data={data.today.data} currentTime={currentTime} title='Elpriser'/>
         }
-        {hasTomorrowData
+        {hasTomorrowData && shouldLoadTomorrowData
           ? <div>
               <p>Och <span style={{fontWeight: 'bold'}}>imorgon</span> blir det så här:</p>
               <LineChart axisConfig={axisConfig} labels={data.tomorrow.labels} dataType={data.currency} data={data.tomorrow.data} title='Elpriser'/>
             </div>
-          : !loading &&
+          : !loading && shouldLoadTomorrowData &&
             <div>
               <h2><span style={{color: 'grey'}}>Morgondagens elpriser kommer ca kl 13:00!</span></h2>
             </div>

@@ -19,27 +19,27 @@ def lambda_handler(event, context):
     tomorrow_date = str(this_date + timedelta(days=1))
     this_date = str(this_date)
 
+    this_username = event['pathParameters']['username']
+
     today_response = table.query(
-        KeyConditionExpression=Key('date').eq(this_date),
-        FilterExpression=Attr('user').eq(event['pathParameters']['username'])
+        KeyConditionExpression=Key('date').eq(f"{this_username}:{this_date}")
     )
     
     tomorrow_response = table.query(
-        KeyConditionExpression=Key('date').eq(tomorrow_date),
-        FilterExpression=Attr('user').eq(event['pathParameters']['username'])
+        KeyConditionExpression=Key('date').eq(f"{this_username}:{tomorrow_date}")
     )
 
     prices = {
             'today': [
                 {
-                    'startsAt': f"{i['date']} {i['timestamp']}",
+                    'startsAt': f"{i['date'].split(':')[1]} {i['timestamp']}",
                     'total': float(i['total'])
                 }
                 for i in today_response['Items']
             ],
             'tomorrow': [
                 {
-                    'startsAt': f"{i['date']} {i['timestamp']}",
+                    'startsAt': f"{i['date'].split(':')[1]} {i['timestamp']}",
                     'total': float(i['total'])
                 }
                 for i in tomorrow_response['Items']

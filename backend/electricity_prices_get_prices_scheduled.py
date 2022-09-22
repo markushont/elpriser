@@ -55,22 +55,28 @@ def save_to_db(price_data, username):
         for item in price_data:
             starts_at = datetime.fromisoformat(item['startsAt'])
             to_save = {
-                'date': str(starts_at.date()),
+                'date': f"{username}:{str(starts_at.date())}",
                 'timestamp': starts_at.strftime('%H:%M:%S.%f'),
                 'energy': item['energy'],
                 'tax': item['tax'],
-                'total': item['total'],
-                'user': username
+                'total': item['total']
             }
             batch.put_item(
                 Item=json.loads(json.dumps(to_save), parse_float=Decimal)
             )
 
-def lambda_handler(event, context):
-    username = 'markus'
+def get_users():
+    user_data = db_client.scan(
+        TableName='electricityPricesAuth',
+        AttributesToGet=['user_name', 'api_token'])
+    
+    return [{'user_name': v['user_name']['S'], 'api_token': v['api_token']['S']} for v in user_data['Items']]
+
+def fetch_and_save_data(user):
+    print(user['user_name'])
     request_headers = {
         'Content-Type': 'application/json',
-        'Authorization': f"Bearer {get_api_token(username)}"
+        'Authorization': f"Bearer {user['api_token']}"
     }
     
     res = requests.post(
@@ -80,7 +86,6 @@ def lambda_handler(event, context):
     )
     
     if not res.ok:
-      print(res.text)
       return {
         'statusCode': 500,
         'body': res.text
@@ -90,7 +95,13 @@ def lambda_handler(event, context):
     
     prices_today = data['data']['viewer']['homes'][0]['currentSubscription']['priceInfo']['tomorrow']
 
-    save_to_db(prices_today, username)
+    save_to_db(prices_today, user['user_name'])
+
+def lambda_handler(event, context):
+    users = get_users()
+    
+    for user in users:
+      fetch_and_save_data(user)
     
     return {
         'statusCode': 200
