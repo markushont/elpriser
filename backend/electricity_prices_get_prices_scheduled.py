@@ -36,18 +36,6 @@ prices_query = '''{
   }
 }'''
 
-def get_api_token(username):
-    auth_data = db_client.get_item(
-        TableName='electricityPricesAuth',
-        Key={
-            'user_name': {
-                'S': username
-            }
-        }
-    )
-    
-    return auth_data['Item']['api_token']['S']
-
 def save_to_db(price_data, username):
     table = dynamodb_resource.Table('electricityPrices')
     

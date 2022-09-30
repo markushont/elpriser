@@ -1,88 +1,34 @@
 import './App.css';
-import "react-datepicker/dist/react-datepicker.css";
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
-import DatePicker from "react-datepicker";
-import LineChart from './GradientLineChart';
+import PriceChart from './PriceChart';
+import ToggleButtonGroup from './ToggleButtonGroup';
 
-function parseData(data) {
-  return {
-    currency: 'kr',
-    today: {
-      labels: data['today'].map(d => d['startsAt']),
-      data: data['today'].map(d => d['total'])
-    },
-    tomorrow: {
-      labels: data['tomorrow'].map(d => d['startsAt']),
-      data: data['tomorrow'].map(d => d['total'])
-    }
-  }
+const page_names = {
+  DAILY: "Dagspris",
+  CONSUMPTION: "Konsumtion"
 }
 
 export default function App() {
-  const DATE_ENCODING = 'sv-SE';
+  const [user] = useState('markus');
+  const [activePage, setActivePage] = useState(page_names.DAILY)
 
-  const [data, setData] = useState({
-    currency: 'kr',
-    today: {
-      labels: [],
-      data: []
-    },
-    tomorrow: {
-      labels: [],
-      data: []
-    }
-  });
-  const [loading, setLoading] = useState(true);
-  const [date, setDate] = useState(new Date());
-  const currentTime = new Date();
-  const [user, setUser] = useState('markus');
-
-  useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_BASE_URL || ''}/prices/${user}?date=${date.toLocaleDateString(DATE_ENCODING)}`)
-      .then((response) => response.json())
-      .then((jsonData) => setData(parseData(jsonData)))
-      .catch((err) => console.log(err))
-      .finally(() => setLoading(false))
-  }, [date, user]);
-
-  const yAxisPadding = 1.1;
-  const globalMaxY = yAxisPadding * Math.max(...data.today.data, ...data.tomorrow.data);
-
-  const hasTodayData = data.today.data.length !== 0;
-  const hasTomorrowData = data.tomorrow.data.length !== 0;
-  const shouldLoadTomorrowData = currentTime.getDate() === date.getDate();
-
-  const axisConfig = {
-    y: {
-      max: globalMaxY
-    }
-  }
+  const pages = [page_names.DAILY, page_names.CONSUMPTION];
 
   return (
     <div className='App'>
       <div className='header'>
-        <h1><span role='img'>🎉🎊🎈</span> Här är elpriserna!! <span role='img'>🎈🎊🎉</span></h1>
-        <p>Valt datum är</p>
-        <DatePicker popperPlacement='auto' minDate={new Date('2022-01-01')} maxDate={currentTime} selected={date} onChange={date => setDate(date)} dateFormat='yyyy-MM-dd' />
+        <h1><span role='img' aria-label="Love">🎉🎊🎈</span> Här är elpriserna!! <span role='img' aria-label="Love">🎈🎊🎉</span></h1>
       </div>
-      <div className='chart'>
-        {loading && <div>Ett ögonlock...</div>}
-        {hasTodayData &&
-          <LineChart axisConfig={axisConfig} labels={data.today.labels} dataType={data.currency} data={data.today.data} currentTime={currentTime} title='Elpriser'/>
-        }
-        {hasTomorrowData && shouldLoadTomorrowData
-          ? <div>
-              <p>Och <span style={{fontWeight: 'bold'}}>imorgon</span> blir det så här:</p>
-              <LineChart axisConfig={axisConfig} labels={data.tomorrow.labels} dataType={data.currency} data={data.tomorrow.data} title='Elpriser'/>
-            </div>
-          : !loading && shouldLoadTomorrowData &&
-            <div>
-              <h2><span style={{color: 'grey'}}>Morgondagens elpriser kommer ca kl 13:00!</span></h2>
-            </div>
-        }
+      <div className="toggle-buttons">
+        <ToggleButtonGroup types={pages} active={activePage} onClickCallback={setActivePage} />
       </div>
+      {activePage === page_names.DAILY &&
+        <div className='chartbox'>
+          <PriceChart user={user} />
+        </div>
+      }
     </div>
   )
 }

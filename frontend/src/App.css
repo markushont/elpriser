@@ -3,14 +3,3 @@
   width: 90%;
   margin: 0 auto;
 }
-
-.chart {
-  width: 50%;
-  min-width: 350px;
-  margin: 10px auto;
-}
-
-.react-datepicker__input-container input {
-  font-weight: bold;
-  text-align: center;
-}
