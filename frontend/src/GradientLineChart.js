@@ -30,16 +30,20 @@ ChartJS.register(
   Legend
 );
 
-function computeGradient(ctx, area, dataPoints) {
+function computeGradient(ctx, area, axisConfig, dataPoints) {
   const avg = dataPoints.reduce((a, b) => a + b, 0) / dataPoints.length;
   const max = Math.max.apply(0, dataPoints);
+  const min = Math.min.apply(0, dataPoints);
+  const maxViewportRatio = max / ((axisConfig && axisConfig.y && axisConfig.y.max) || max)
+  const minViewportRatio = min / ((axisConfig && axisConfig.y && axisConfig.y.max) || max)
   const gradient = ctx.createLinearGradient(0, area.bottom, 0, area.top);
 
-  gradient.addColorStop(0, 'green');
+  gradient.addColorStop(minViewportRatio, 'green');
   if (avg && max) {
-    gradient.addColorStop(avg / max, 'yellow');
+    gradient.addColorStop(maxViewportRatio * avg / max, 'yellow');
   }
-  gradient.addColorStop(1, 'red');
+
+  gradient.addColorStop(maxViewportRatio, 'red');
 
   return gradient
 }
@@ -57,7 +61,7 @@ function getOptions(title, axisConfig) {
         }
       },
       yAxis: {
-        min: axisConfig && axisConfig.x && axisConfig.x.max,
+        min: axisConfig && axisConfig.y && axisConfig.y.min,
         max: axisConfig && axisConfig.y && axisConfig.y.max
       }
     },
@@ -108,7 +112,7 @@ export default function LineChart(props) {
           data: props.labels.map((label, index) => {
             const currentDate = props.currentTime;
             const labelDate = new Date(label);
-            return dateCompareHours(currentDate, labelDate) ? props.data[index] : null
+            return dateCompareHours(currentDate, labelDate) ? props.data[0][index] : null
           }),
           xAxisID: 'xAxis',
           yAxisID: 'yAxis',
@@ -119,7 +123,7 @@ export default function LineChart(props) {
       ].concat(props.data.map(d => ({
         data: d.data,
         label: d.dataType,
-        borderColor: d.borderColor || computeGradient(chart.ctx, chart.chartArea, props.data),
+        borderColor: d.borderColor || computeGradient(chart.ctx, chart.chartArea, props.axisConfig, d.data),
         backgroundColor: d.backgroundColor || "rgba(53, 162, 235, 0.5)",
         xAxisID: 'xAxis',
         yAxisID: 'yAxis'

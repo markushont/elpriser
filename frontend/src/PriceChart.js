@@ -35,11 +35,11 @@ export default function PriceChart(props) {
   const [data, setData] = useState({
     today: {
       labels: [],
-      data: []
+      data: [{data: [], dataType: "kr"}]
     },
     tomorrow: {
       labels: [],
-      data: []
+      data: [{data: [], dataType: "kr"}]
     }
   });
   const [loading, setLoading] = useState(true);
@@ -57,10 +57,10 @@ export default function PriceChart(props) {
   }, [date, props.user]);
 
   const yAxisPadding = 1.1;
-  const globalMaxY = yAxisPadding * Math.max(...data.today.data, ...data.tomorrow.data);
+  const globalMaxY = yAxisPadding * Math.max(...data.today.data[0].data, ...data.tomorrow.data[0].data);
 
-  const hasTodayData = data.today.data.length !== 0;
-  const hasTomorrowData = data.tomorrow.data.length !== 0;
+  const hasTodayData = data.today.data[0].data.length !== 0;
+  const hasTomorrowData = data.tomorrow.data[0].data.length !== 0;
   const shouldLoadTomorrowData = currentTime.getDate() === date.getDate();
 
   const axisConfig = {
