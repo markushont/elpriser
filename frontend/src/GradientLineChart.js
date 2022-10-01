@@ -37,7 +37,7 @@ function computeGradient(ctx, area, dataPoints) {
 
   gradient.addColorStop(0, 'green');
   if (avg && max) {
-    gradient.addColorStop(avg/max, 'yellow');
+    gradient.addColorStop(avg / max, 'yellow');
   }
   gradient.addColorStop(1, 'red');
 
@@ -87,7 +87,7 @@ function dateCompareHours(d1, d2) {
     && d1.getFullYear() === d2.getFullYear()
     && d1.getMonth() === d2.getMonth()
     && d1.getDay() === d2.getDay()
-    && d1.getHours() === d2.getHours() 
+    && d1.getHours() === d2.getHours()
 }
 
 export default function LineChart(props) {
@@ -115,23 +115,22 @@ export default function LineChart(props) {
           borderWidth: 5,
           borderColor: 'black',
           backgroundColor: 'black'
-        },
-        {
-          data: props.data,
-          label: props.dataType,
-          borderColor: computeGradient(chart.ctx, chart.chartArea, props.data),
-          backgroundColor: 'rgba(53, 162, 235, 0.5)',
-          xAxisID: 'xAxis',
-          yAxisID: 'yAxis'
         }
-      ]
+      ].concat(props.data.map(d => ({
+        data: d.data,
+        label: d.dataType,
+        borderColor: d.borderColor || computeGradient(chart.ctx, chart.chartArea, props.data),
+        backgroundColor: d.backgroundColor || "rgba(53, 162, 235, 0.5)",
+        xAxisID: 'xAxis',
+        yAxisID: 'yAxis'
+      })))
     };
 
     setChartData(chartData);
   }, [])
 
   return (
-    <div style={{width: '100%', padding: '2%'}} >
+    <div style={{ width: '100%', padding: '2%' }} >
       <Chart ref={chartRef} options={getOptions(props.title, props.axisConfig)} type='line' data={chartData} />
     </div>
   )

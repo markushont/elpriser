@@ -8,14 +8,23 @@ import LineChart from './GradientLineChart';
 
 function parseData(data) {
   return {
-    currency: 'kr',
     today: {
       labels: data['today'].map(d => d['startsAt']),
-      data: data['today'].map(d => d['total'])
+      data: [
+        {
+          dataType: "kr",
+          data: data['today'].map(d => d['total'])
+        }
+      ]
     },
     tomorrow: {
       labels: data['tomorrow'].map(d => d['startsAt']),
-      data: data['tomorrow'].map(d => d['total'])
+      data: [
+        {
+          data: data['tomorrow'].map(d => d['total']),
+          dataType: "kr"
+        }
+      ]
     }
   }
 }
@@ -24,7 +33,6 @@ export default function PriceChart(props) {
   const DATE_ENCODING = 'sv-SE';
 
   const [data, setData] = useState({
-    currency: 'kr',
     today: {
       labels: [],
       data: []
@@ -70,12 +78,12 @@ export default function PriceChart(props) {
       <div className='chart'>
         {loading && <div>Ett ögonlock...</div>}
         {hasTodayData &&
-          <LineChart axisConfig={axisConfig} labels={data.today.labels} dataType={data.currency} data={data.today.data} currentTime={currentTime} title='Elpriser'/>
+          <LineChart axisConfig={axisConfig} labels={data.today.labels} data={data.today.data} currentTime={currentTime} title='Elpriser'/>
         }
         {hasTomorrowData && shouldLoadTomorrowData
           ? <div>
               <p>Och <span style={{fontWeight: 'bold'}}>imorgon</span> blir det så här:</p>
-              <LineChart axisConfig={axisConfig} labels={data.tomorrow.labels} dataType={data.currency} data={data.tomorrow.data} title='Elpriser'/>
+              <LineChart axisConfig={axisConfig} labels={data.tomorrow.labels} data={data.tomorrow.data} title='Elpriser'/>
             </div>
           : !loading && shouldLoadTomorrowData &&
             <div>

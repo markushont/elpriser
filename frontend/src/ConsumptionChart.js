@@ -8,7 +8,12 @@ import LineChart from "./GradientLineChart";
 function parseData(data) {
   return {
     labels: data['consumption'].map(d => d['from_timestamp']),
-    data: data['consumption'].map(d => d['consumption'])
+    data: [
+      {
+        dataType: "kWh",
+        data: data['consumption'].map(d => d['consumption'])
+      }
+    ]
   }
 }
 
@@ -41,7 +46,7 @@ export default function ConsumptionChart(props) {
       <div className='chart'>
         {loading && <div>Ett ögonlock...</div>}
         {!loading &&
-          <LineChart dataType="kWh" labels={data.labels} data={data.data} title='Konsumption' />
+          <LineChart labels={data.labels} data={data.data} title='Konsumption' />
         }
       </div>
     </div>

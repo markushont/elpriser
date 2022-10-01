@@ -26,7 +26,8 @@ export default function Layout() {
           <h1>
             <span role='img' aria-label="Love">🎉🎊🎈 </span>
             {routes[location.pathname].header}
-            <span role='img' aria-label="Love"> 🎈🎊🎉</span></h1>
+            <span role='img' aria-label="Love"> 🎈🎊🎉</span>
+          </h1>
         </div>
       }
       <Outlet />
