@@ -41,7 +41,7 @@ export default function ConsumptionChart(props) {
       <div className='chart'>
         {loading && <div>Ett ögonlock...</div>}
         {!loading &&
-          <LineChart labels={data.labels} data={data.data} title='Konsumption' />
+          <LineChart dataType="kWh" labels={data.labels} data={data.data} title='Konsumption' />
         }
       </div>
     </div>
