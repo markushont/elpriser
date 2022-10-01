@@ -39,6 +39,8 @@ export default function PriceChart(props) {
   const currentTime = new Date();
 
   useEffect(() => {
+    if (!loading)
+      setLoading(true);
     fetch(`${process.env.REACT_APP_API_BASE_URL || ''}/prices/${props.user}?date=${date.toLocaleDateString(DATE_ENCODING)}`)
       .then((response) => response.json())
       .then((jsonData) => setData(parseData(jsonData)))

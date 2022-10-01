@@ -36,7 +36,9 @@ function computeGradient(ctx, area, dataPoints) {
   const gradient = ctx.createLinearGradient(0, area.bottom, 0, area.top);
 
   gradient.addColorStop(0, 'green');
-  gradient.addColorStop(avg/max, 'yellow');
+  if (avg && max) {
+    gradient.addColorStop(avg/max, 'yellow');
+  }
   gradient.addColorStop(1, 'red');
 
   return gradient

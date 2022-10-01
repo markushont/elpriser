@@ -2,6 +2,7 @@ import './App.css';
 
 import React, { useState } from 'react';
 
+import ConsumptionChart from './ConsumptionChart';
 import PriceChart from './PriceChart';
 import ToggleButtonGroup from './ToggleButtonGroup';
 
@@ -27,6 +28,11 @@ export default function App() {
       {activePage === page_names.DAILY &&
         <div className='chartbox'>
           <PriceChart user={user} />
+        </div>
+      }
+      {activePage === page_names.CONSUMPTION &&
+        <div className='chartbox'>
+          <ConsumptionChart user={user} />
         </div>
       }
     </div>
