@@ -48,7 +48,7 @@ function computeGradient(ctx, area, axisConfig, dataPoints) {
   return gradient
 }
 
-function getOptions(title, axisConfig) {
+function getOptions(title, axisConfig, legendConfig) {
   return {
     scales: {
       xAxis: {
@@ -75,8 +75,11 @@ function getOptions(title, axisConfig) {
     responsive: true,
     plugins: {
       legend: {
-        display: false,
-        position: 'top',
+        display: legendConfig && legendConfig.display,
+        position: (legendConfig && legendConfig.position) || "top",
+        labels: {
+          filter: (item, chart) => item.text !== "__timeMarker"
+        }
       },
       title: {
         display: false,
@@ -105,29 +108,34 @@ export default function LineChart(props) {
 
     if (!chart) return;
 
-    const chartData = {
-      labels: props.labels,
-      datasets: [
-        {
+    const timeMarker = props.currentTime
+      ? [{
           data: props.labels.map((label, index) => {
             const currentDate = props.currentTime;
             const labelDate = new Date(label);
             return dateCompareHours(currentDate, labelDate) ? props.data[0][index] : null
           }),
+          label: "__timeMarker",
           xAxisID: 'xAxis',
           yAxisID: 'yAxis',
           borderWidth: 5,
           borderColor: 'black',
           backgroundColor: 'black'
-        }
-      ].concat(props.data.map(d => ({
-        data: d.data,
-        label: d.dataType,
-        borderColor: d.borderColor || computeGradient(chart.ctx, chart.chartArea, props.axisConfig, d.data),
-        backgroundColor: d.backgroundColor || "rgba(53, 162, 235, 0.5)",
-        xAxisID: 'xAxis',
-        yAxisID: 'yAxis'
-      })))
+        }]
+      : [];
+    
+    const datasets = props.data.map(d => ({
+      data: d.data,
+      label: d.dataType,
+      borderColor: d.borderColor || computeGradient(chart.ctx, chart.chartArea, props.axisConfig, d.data),
+      backgroundColor: d.backgroundColor || d.borderColor,
+      xAxisID: 'xAxis',
+      yAxisID: 'yAxis'
+    }))
+
+    const chartData = {
+      labels: props.labels,
+      datasets: timeMarker.concat(datasets)
     };
 
     setChartData(chartData);

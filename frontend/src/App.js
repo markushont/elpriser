@@ -23,7 +23,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<PriceChart user={user} />} />
-          <Route path="/konsumtion" element={<ConsumptionChart user={user} />} />
+          <Route path="/forbrukning" element={<ConsumptionChart user={user} />} />
 
           <Route path="*" element={<Nothing />} />
         </Route>

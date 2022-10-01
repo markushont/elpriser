@@ -5,13 +5,18 @@ import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import LineChart from "./GradientLineChart";
 
-function parseData(data) {
+function parseConsumptionData(consumptionData) {
   return {
-    labels: data['consumption'].map(d => d['from_timestamp']),
+    labels: consumptionData['consumption'].map(d => d['from_timestamp']),
     data: [
       {
-        dataType: "kWh",
-        data: data['consumption'].map(d => d['consumption'])
+        dataType: "Förbrukning (kWh)",
+        data: consumptionData['consumption'].map(d => d['consumption']),
+        borderColor: "black"
+      },
+      {
+        dataType: "Elpris (kr/kWh)",
+        data: consumptionData['consumption'].map(d => d['unit_price'])
       }
     ]
   }
@@ -21,7 +26,7 @@ export default function ConsumptionChart(props) {
   const DATE_ENCODING = 'sv-SE';
   const yesterdayDate = ( d => new Date(d.setDate(d.getDate()-1)) )(new Date());
   
-  const [data, setData] = useState({
+  const [chartData, setChartData] = useState({
     labels: [],
     data: []
   });
@@ -29,10 +34,12 @@ export default function ConsumptionChart(props) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
+    if (!loading)
+      setLoading(true);
+
     fetch(`${process.env.REACT_APP_API_BASE_URL || ""}/consumption/${props.user}?date=${date.toLocaleDateString(DATE_ENCODING)}`)
       .then((response) => response.json())
-      .then((jsonData) => setData(parseData(jsonData)))
+      .then((jsonData) => setChartData(parseConsumptionData(jsonData)))
       .catch((err) => console.error(err))
       .finally(() => setLoading(false))
   }, [date, props.user])
@@ -46,7 +53,7 @@ export default function ConsumptionChart(props) {
       <div className='chart'>
         {loading && <div>Ett ögonlock...</div>}
         {!loading &&
-          <LineChart labels={data.labels} data={data.data} title='Konsumption' />
+          <LineChart labels={chartData.labels} data={chartData.data} title='Konsumption' />
         }
       </div>
     </div>

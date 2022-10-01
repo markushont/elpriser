@@ -9,10 +9,10 @@ const routes = {
     text: "Elpriser",
     header: "ELPRISER!!"
   },
-  "/konsumtion": {
-    path: "/konsumtion",
-    text: "Konsumtion",
-    header: "KONSUMTION!!"
+  "/forbrukning": {
+    path: "/forbrukning",
+    text: "Förbrukning",
+    header: "FÖRBRUKNING!!"
   }
 }
 
