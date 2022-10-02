@@ -1,8 +1,9 @@
-name: Build & Deploy
+name: Build & Deploy Web
 
 on:
   push:
     branches: [ "main" ]
+    paths: frontend/**
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
@@ -24,12 +25,11 @@ jobs:
     - name: Yarn Install
       run: |
         yarn install
+      working-directory: ./frontend
     - name: Production Build
       run: |
         yarn build
-    - name: Unit Tests
-      run: |
-        yarn test
+      working-directory: ./frontend
     - name: Deploy to S3
       uses: jakejarvis/s3-sync-action@master
       with:
@@ -39,4 +39,4 @@ jobs:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_S3_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_S3_SECRET_ACCESS_KEY }}
         AWS_REGION: ${{ secrets.AWS_REGION }}
-        SOURCE_DIR: "build"
+        SOURCE_DIR: "./frontend/build"
