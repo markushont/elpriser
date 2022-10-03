@@ -3,22 +3,15 @@ import "react-datepicker/dist/react-datepicker.css";
 import React, { useEffect, useState } from "react";
 
 import DatePicker from "react-datepicker";
-import LineChart from "./components/GradientLineChart";
+import HeatLineChart from "./components/HeatLineChart";
 
 function parseConsumptionData(consumptionData) {
   return {
     labels: consumptionData['consumption'].map(d => d['from_timestamp']),
-    data: [
-      {
-        dataType: "Förbrukning (kWh)",
-        data: consumptionData['consumption'].map(d => d['consumption']),
-        borderColor: "black"
-      },
-      {
-        dataType: "Elpris (kr/kWh)",
-        data: consumptionData['consumption'].map(d => d['unit_price'])
-      }
-    ]
+    yDataType: "Förbrukning (kWh)",
+    yData: consumptionData['consumption'].map(d => d['consumption']),
+    zDataType: "Pris (kr/kWh)",
+    zData: consumptionData['consumption'].map(d => d['unit_price'])
   }
 }
 
@@ -53,7 +46,7 @@ export default function ConsumptionChart(props) {
       <div className='chart'>
         {loading && <div>Ett ögonlock...</div>}
         {!loading &&
-          <LineChart labels={chartData.labels} data={chartData.data} title='Konsumption' />
+          <HeatLineChart data={chartData} />
         }
       </div>
     </div>
