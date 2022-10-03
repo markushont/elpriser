@@ -4,7 +4,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import React, { useEffect, useState } from 'react';
 
 import DatePicker from "react-datepicker";
-import LineChart from './GradientLineChart';
+import LineChart from './components/GradientLineChart';
 
 function parseData(data) {
   return {

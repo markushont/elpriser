@@ -2,7 +2,7 @@ import "./Navbar.css";
 
 import { Link } from "react-router-dom";
 import React from "react";
-import { ToggleButton } from "./Buttons";
+import { ToggleButton } from "./components/Buttons";
 
 export default function Navbar(props) {
 
