@@ -21,8 +21,7 @@ ChartJS.register(
 );
 
 
-function getColorForZVal(zVal, maxZ, opacity) {
-  // const GREEN = [17, 179, 2];
+function getColorForZVal(zVal, maxZ, minZ, opacity) {
   const GREEN = [0, 255, 0];
   const RED = [255, 0, 0];
   
@@ -32,7 +31,7 @@ function getColorForZVal(zVal, maxZ, opacity) {
     RED[2] - GREEN[2]
   ];
 
-  const heat = zVal / maxZ;
+  const heat = (zVal - minZ) / maxZ;
   const colorVec = [
     GREEN[0] + heat*dirVec[0],
     GREEN[1] + heat*dirVec[1],
@@ -62,8 +61,9 @@ export default function HeatLineChart(props) {
       const gradient = chart.ctx.createLinearGradient(chart.chartArea.left, 0, chart.chartArea.right, 0);
       const dX = 1 / props.data.labels.length;
       const maxZ = Math.max(...props.data.zData);
+      const minZ = Math.min(...props.data.zData);
       for (let i = 0; i < props.data.labels.length; i++) {
-        gradient.addColorStop(i*dX, getColorForZVal(props.data.zData[i], maxZ, 0.9))
+        gradient.addColorStop(i*dX, getColorForZVal(props.data.zData[i], maxZ, minZ, 0.9))
       }
       setChartGradient(gradient);
     } 
