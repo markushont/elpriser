@@ -53,6 +53,8 @@ def lambda_handler(event, context):
         group_data = list(group)
         summary['30_day_summary'][date]['consumption_tot'] = \
             round(sum([float(g['consumption']) for g in group_data]), 2)
+        summary['30_day_summary'][date]['cost_tot'] = \
+            round(sum([ float(g['consumption']) * (float(g['unit_price']) + float(g['unit_price_vat'])) for g in group_data]), 2)
         summary['30_day_summary'][date]['consumption_avg'] = \
             round(mean([float(g['consumption']) for g in group_data]), 2)
     
@@ -64,11 +66,20 @@ def lambda_handler(event, context):
             if 'consumption_avg' in d
         ]), 
         2)
+    summary['cost_tot'] = round(
+        sum(
+        [
+            d['cost_tot']
+            for date, d in summary['30_day_summary'].items()
+            if 'cost_tot' in d
+        ]),
+        2)
     
     thirty_day_list = [
         {
             'consumption_tot': d['consumption_tot'] if 'consumption_tot' in d else None,
             'consumption_avg': d['consumption_avg'] if 'consumption_avg' in d else None,
+            'cost_tot': d['cost_tot'] if 'cost_tot' in d else None,
             'date': date,
             'price_avg': d['price_avg'] if 'price_avg' in d else None
         }
@@ -78,6 +89,7 @@ def lambda_handler(event, context):
     summary_ret = {
         'price_avg_daily': summary['price_avg_daily'],
         'consumption_avg_daily': summary['consumption_avg_daily'],
+        'cost_tot': summary['cost_tot'],
         '30_day_summary': list(sorted(
             thirty_day_list,
             key=lambda x: x['date']
