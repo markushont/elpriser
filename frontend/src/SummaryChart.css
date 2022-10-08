@@ -1,0 +1,14 @@
+.stats-container {
+    height: 100px;
+    width: 50%;
+    margin: 10px auto;
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    flex-wrap: wrap;
+}
+
+.stats-item {
+    padding: 10px;
+    font-size: xx-large;
+}

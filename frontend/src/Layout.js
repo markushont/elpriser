@@ -13,6 +13,11 @@ const routes = {
     path: "/forbrukning",
     text: "Förbrukning",
     header: "FÖRBRUKNING!!"
+  },
+  "/sammanfattning": {
+    path: "/sammanfattning",
+    text: "Sammanfattning",
+    header: "SAMMANFATTNING!!"
   }
 }
 

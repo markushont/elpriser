@@ -6,6 +6,7 @@ import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import ConsumptionChart from './ConsumptionChart';
 import Layout from './Layout';
 import PriceChart from './PriceChart';
+import SummaryChart from './SummaryChart';
 
 function Nothing() {
   return (
@@ -35,6 +36,7 @@ export default function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<PriceChart user={user} />} />
           <Route path="/forbrukning" element={<ConsumptionChart user={user} />} />
+          <Route path="/sammanfattning" element={<SummaryChart user={user} />} />
 
           <Route path="*" element={<Nothing />} />
         </Route>
