@@ -11,9 +11,9 @@ import {
   Tooltip,
   registerables as registrablesJS
 } from 'chart.js';
-import React, { createRef, useEffect, useState } from "react";
 
 import { Bar } from 'react-chartjs-2';
+import React from "react";
 
 ChartJS.register(...registrablesJS);
 ChartJS.register(
