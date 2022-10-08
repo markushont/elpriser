@@ -43,9 +43,9 @@ export default function ConsumptionChart(props) {
       .finally(() => setLoading(false))
   }, [date, props.user])
 
-  const maxPrice = Math.round(1000 * Math.max(...chartData.zData)) / 1000;
-  const minPrice = Math.round(1000 * Math.min(...chartData.zData)) / 1000;
-  const totCost = chartData.cost.length ? Math.round(100 * chartData.cost.reduce((agg, val) => agg += val)) / 100 : 0;
+  const maxPrice = (Math.round(100 * Math.max(...chartData.zData)) / 100).toFixed(2);
+  const minPrice = (Math.round(100 * Math.min(...chartData.zData)) / 100).toFixed(2);
+  const totCost = chartData.cost.length ? (Math.round(100 * chartData.cost.reduce((agg, val) => agg += val)) / 100).toFixed(2) : 0;
   
   return (
     <div className="ConsumptionChart">
