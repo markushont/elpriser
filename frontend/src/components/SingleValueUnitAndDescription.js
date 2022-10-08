@@ -5,8 +5,8 @@ export default function SingleValueAndDescription(props) {
     return (
         <div
             style={{
-                width: "150px",
-                minHeight: "150px",
+                width: "170px",
+                minHeight: "170px",
                 border: "1px solid rgba(200,200,200,0.5)",
                 padding: "5px 15px",
                 display: "flex",

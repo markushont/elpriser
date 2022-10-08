@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 
 import DatePicker from "react-datepicker";
 import HeatLineChart from "./components/HeatLineChart";
+import SingleValueunitAndDescription from "./components/SingleValueUnitAndDescription";
 
 function parseConsumptionData(consumptionData) {
   return {
@@ -11,7 +12,7 @@ function parseConsumptionData(consumptionData) {
     yDataType: "Förbrukning (kWh)",
     yData: consumptionData['consumption'].map(d => d['consumption']),
     zDataType: "Pris (kr/kWh)",
-    zData: consumptionData['consumption'].map(d => d['unit_price'])
+    zData: consumptionData['consumption'].map(d => d['unit_price'] + d['unit_price_vat'])
   }
 }
 
@@ -42,6 +43,7 @@ export default function ConsumptionChart(props) {
 
   const maxPrice = Math.round(1000 * Math.max(...chartData.zData)) / 1000;
   const minPrice = Math.round(1000 * Math.min(...chartData.zData)) / 1000;
+  const totCost = chartData.zData.length ? Math.round(100 * chartData.zData.reduce((agg, val) => agg += val)) / 100 : 0;
   
   return (
     <div className="ConsumptionChart">
@@ -56,10 +58,13 @@ export default function ConsumptionChart(props) {
             <HeatLineChart data={chartData} />
             <div style={{width: "95%", margin: "20px auto",}}>
               <div style={{margin: "0 20px", height: "20px", background: "linear-gradient(.25turn,rgb(0,255,0),transparent)", backgroundColor: "rgb(255,0,0)"}} />
-              <div style={{display: "flex", justifyContent: "space-between"}}>
+              <div style={{display: "flex", lineHeight: 0, justifyContent: "space-between"}}>
                 <p>{minPrice} kr</p>
                 <p>{maxPrice} kr</p>
               </div>
+            </div>
+            <div style={{width: "182px", margin: "0 auto"}}>
+              <SingleValueunitAndDescription val={totCost} unit="kr" desc="kostade dagen"/>
             </div>
           </>
         }
