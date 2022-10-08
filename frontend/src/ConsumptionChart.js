@@ -21,7 +21,10 @@ export default function ConsumptionChart(props) {
   
   const [chartData, setChartData] = useState({
     labels: [],
-    data: []
+    yDataType: "",
+    yData: [],
+    zDataType: "",
+    zData: []
   });
   const [date, setDate] = useState(yesterdayDate);
   const [loading, setLoading] = useState(true);
@@ -37,6 +40,9 @@ export default function ConsumptionChart(props) {
       .finally(() => setLoading(false))
   }, [date, props.user])
 
+  const maxPrice = Math.round(1000 * Math.max(...chartData.zData)) / 1000;
+  const minPrice = Math.round(1000 * Math.min(...chartData.zData)) / 1000;
+  
   return (
     <div className="ConsumptionChart">
       <div className='header'>
@@ -46,7 +52,16 @@ export default function ConsumptionChart(props) {
       <div className='chart'>
         {loading && <div>Ett ögonlock...</div>}
         {!loading &&
-          <HeatLineChart data={chartData} />
+          <>
+            <HeatLineChart data={chartData} />
+            <div style={{width: "95%", margin: "20px auto",}}>
+              <div style={{margin: "0 20px", height: "20px", background: "linear-gradient(.25turn,rgb(0,255,0),transparent)", backgroundColor: "rgb(255,0,0)"}} />
+              <div style={{display: "flex", justifyContent: "space-between"}}>
+                <p>{minPrice} kr</p>
+                <p>{maxPrice} kr</p>
+              </div>
+            </div>
+          </>
         }
       </div>
     </div>
