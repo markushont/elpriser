@@ -98,7 +98,7 @@ function dateCompareHours(d1, d2) {
 }
 
 export default function LineChart(props) {
-  const chartRef = createRef();
+  const [chartRef, setChartRef] = useState(createRef());
   const [chartData, setChartData] = useState({
     labels: [],
     datasets: []
@@ -107,7 +107,9 @@ export default function LineChart(props) {
   useEffect(() => {
     const chart = chartRef.current;
 
-    if (!chart) return;
+    if (!chart) {
+      setChartRef(createRef());
+    }
 
     const timeMarker = props.currentTime
       ? [{
@@ -142,7 +144,7 @@ export default function LineChart(props) {
     };
 
     setChartData(chartData);
-  }, [])
+  }, [props.data])
 
   return (
     <div style={{ width: '100%', padding: '2%' }} >
