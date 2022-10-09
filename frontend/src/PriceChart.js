@@ -56,12 +56,14 @@ export default function PriceChart(props) {
       .finally(() => setLoading(false))
   }, [date, props.user]);
 
-  const yAxisPadding = 1.1;
-  const globalMaxY = yAxisPadding * Math.max(...data.today.data[0].data, ...data.tomorrow.data[0].data);
-
+  const shouldLoadTomorrowData = currentTime.getDate() === date.getDate();
   const hasTodayData = data.today.data[0].data.length !== 0;
   const hasTomorrowData = data.tomorrow.data[0].data.length !== 0;
-  const shouldLoadTomorrowData = currentTime.getDate() === date.getDate();
+
+  const yAxisPadding = 1.1;
+  const globalMaxY = shouldLoadTomorrowData
+    ? yAxisPadding * Math.max(...data.today.data[0].data, ...data.tomorrow.data[0].data)
+    : yAxisPadding * Math.max(...data.today.data[0].data);
 
   const axisConfig = {
     y: {
