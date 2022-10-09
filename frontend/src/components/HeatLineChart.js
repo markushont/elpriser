@@ -41,7 +41,7 @@ function getColorForZVal(zVal, maxZ, minZ, opacity) {
 }
 
 export default function HeatLineChart(props) {
-  const chartRef = createRef();
+  const [chartRef, setChartRef] = useState(createRef());
   const [chartWidth, setChartWidth] = useState(0);
   const [chartHeight, setChartHeight] = useState(0);
   const [chartGradient, setChartGradient] = useState(null);
@@ -49,7 +49,11 @@ export default function HeatLineChart(props) {
   useEffect(() => {
     const chart = chartRef.current;
 
-    if (!chart || !props.data.yData || !props.data.yData.length) return;
+    if (!chart) {
+      setChartRef(createRef());
+    }
+
+    if (!props.data.yData || !props.data.yData.length) return;
     
     const newWidth = chart.chartArea.right - chart.chartArea.left;
     const newHeight = chart.chartArea.bottom - chart.chartArea.top;
