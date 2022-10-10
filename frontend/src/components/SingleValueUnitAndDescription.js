@@ -14,7 +14,7 @@ export default function SingleValueAndDescription(props) {
                 justifyContent: "space-around",
                 margin: "5px"
         }}>
-            <p style={{flexBasis: "content", fontSize: "7vmin", lineHeight: "80px", fontWeight: "bold", margin: 0}}>
+            <p style={{flexBasis: "content", fontSize: "70px", lineHeight: "80px", fontWeight: "bold", margin: 0}}>
                 {props.val}
             </p>
             <p style={{flexBasis: "auto", fontSize: "30px", fontWeight: "bold", margin: 0}}>
