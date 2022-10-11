@@ -31,7 +31,7 @@ function getColorForZVal(zVal, maxZ, minZ, opacity) {
     RED[2] - GREEN[2]
   ];
 
-  const heat = (zVal - minZ) / (maxZ - minZ);
+  const heat = maxZ !== minZ ? (zVal - minZ) / (maxZ - minZ) : 0;
   const colorVec = [
     GREEN[0] + heat*dirVec[0],
     GREEN[1] + heat*dirVec[1],
