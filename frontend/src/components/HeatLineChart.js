@@ -32,10 +32,23 @@ function getColorForZVal(zVal, maxZ, minZ, opacity) {
   ];
 
   const heat = maxZ !== minZ ? (zVal - minZ) / (maxZ - minZ) : 0;
+  let heatBin = 0;
+  if (heat >= 0 && heat < 0.25) {
+    heatBin = 0;
+  } else if (heat >= 0.25 && heat < 0.5) {
+    heatBin = 0.333;
+  } else if (heat >= 0.5 && heat < 0.75) {
+    heatBin = 0.677;
+  } else if (heat >= 0.75 && heat < 1) {
+    heatBin = 1;
+  } else {
+    heatBin = 1;
+  }
+
   const colorVec = [
-    GREEN[0] + heat*dirVec[0],
-    GREEN[1] + heat*dirVec[1],
-    GREEN[2] + heat*dirVec[2]
+    GREEN[0] + heatBin*dirVec[0],
+    GREEN[1] + heatBin*dirVec[1],
+    GREEN[2] + heatBin*dirVec[2]
   ];
   return `rgba(${colorVec[0]}, ${colorVec[1]}, ${colorVec[2]}, ${opacity})`
 }
