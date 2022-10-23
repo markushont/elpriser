@@ -14,10 +14,18 @@ class DecimalEncoder(json.JSONEncoder):
             return str(obj)
         return json.JSONEncoder.default(self, obj)
 
+def get_user(username):
+    user_table = dynamodb.Table('electricityPricesAuth')
+    
+    return user_table.get_item(
+        Key={'user_name': username}
+    )['Item']
+
 def lambda_handler(event, context):
     today = datetime.now().date()
     range_start = today - timedelta(days=30)
     username = event['pathParameters']['username']
+    user = get_user(username)
 
     summary = {
         '30_day_summary': {}
@@ -25,7 +33,7 @@ def lambda_handler(event, context):
 
     prices_table = dynamodb.Table('electricityPrices')
     prices_response = prices_table.scan(
-        FilterExpression=Key('date').between(f"{username}:{range_start}", f"{username}:{today}")
+        FilterExpression=Key('date').between(f"{user['area']}:{range_start}", f"{user['area']}:{today}")
     )
     
     for key, group in groupby(prices_response['Items'], key=lambda x: x['date']):

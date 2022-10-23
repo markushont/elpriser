@@ -13,7 +13,8 @@ class DecimalEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 def lambda_handler(event, context):
-    table = dynamodb.Table('electricityPrices')
+    prices_table = dynamodb.Table('electricityPrices')
+    user_table = dynamodb.Table('electricityPricesAuth')
 
     this_date = datetime.strptime(event['queryStringParameters']['date'], '%Y-%m-%d').date()
     tomorrow_date = str(this_date + timedelta(days=1))
@@ -21,12 +22,17 @@ def lambda_handler(event, context):
 
     this_username = event['pathParameters']['username']
 
-    today_response = table.query(
-        KeyConditionExpression=Key('date').eq(f"{this_username}:{this_date}")
+    user = user_table.get_item(
+        Key={'user_name': this_username}
+    )
+    user_area = user['Item']['area']
+
+    today_response = prices_table.query(
+        KeyConditionExpression=Key('date').eq(f"{user_area}:{this_date}")
     )
     
-    tomorrow_response = table.query(
-        KeyConditionExpression=Key('date').eq(f"{this_username}:{tomorrow_date}")
+    tomorrow_response = prices_table.query(
+        KeyConditionExpression=Key('date').eq(f"{user_area}:{tomorrow_date}")
     )
 
     prices = {
