@@ -28,10 +28,11 @@ def save_to_db(price_data):
 
 
 def run():
-    with open('/Users/markussilbersteinhont/Downloads/prices.json', 'r') as f:
+    with open('./data/tibber_prices_2022-10-30.json', 'r') as f:
         data = json.load(f)
     
-    price_data = data['data']['viewer']['homes'][0]['currentSubscription']['priceInfo']['range']['nodes']
+    # price_data = data['data']['viewer']['homes'][0]['currentSubscription']['priceInfo']['range']['nodes']
+    price_data = data['data']['viewer']['homes'][0]['currentSubscription']['priceInfo']['today']
 
     d = date(year=2022,month=10,day=21)
 

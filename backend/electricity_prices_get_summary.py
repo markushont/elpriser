@@ -40,7 +40,8 @@ def lambda_handler(event, context):
         date = key.split(':')[1]
         group_data = list(group)
         summary['30_day_summary'][date] = {
-            'price_avg': round(mean([float(g['total']) for g in group_data]), 2)
+            'price_avg': round(mean([float(g['total']) for g in group_data]), 2),
+            'price_tot': round(sum([float(g['total']) for g in group_data]), 2)
         }
     
     summary['price_avg_daily'] = round(
@@ -69,7 +70,7 @@ def lambda_handler(event, context):
     summary['consumption_avg_daily'] = round(
         mean(
         [
-            d['consumption_avg']
+            d['consumption_tot']
             for date, d in summary['30_day_summary'].items()
             if 'consumption_avg' in d
         ]), 

@@ -36,14 +36,14 @@ prices_query = '''{
   }
 }'''
 
-def save_to_db(price_data):
+def save_to_db(price_data, user):
     table = dynamodb_resource.Table('electricityPrices')
     
     with table.batch_writer() as batch:
         for item in price_data:
             starts_at = datetime.fromisoformat(item['startsAt'])
             to_save = {
-                'date': str(starts_at.date()),
+                'date': f"{user['area']}:{str(starts_at.date())}",
                 'timestamp': starts_at.strftime('%H:%M:%S.%f'),
                 'energy': item['energy'],
                 'tax': item['tax'],
@@ -56,9 +56,9 @@ def save_to_db(price_data):
 def get_users():
     user_data = db_client.scan(
         TableName='electricityPricesAuth',
-        AttributesToGet=['user_name', 'api_token'])
+        AttributesToGet=['user_name', 'api_token', 'area'])
     
-    return [{'user_name': v['user_name']['S'], 'api_token': v['api_token']['S']} for v in user_data['Items']]
+    return [{'user_name': v['user_name']['S'], 'area': v['area']['S'], 'api_token': v['api_token']['S']} for v in user_data['Items']]
 
 def fetch_and_save_data(user):
     request_headers = {
@@ -83,7 +83,7 @@ def fetch_and_save_data(user):
     
     prices_today = data['data']['viewer']['homes'][0]['currentSubscription']['priceInfo']['tomorrow']
 
-    save_to_db(prices_today)
+    save_to_db(prices_today, user)
 
 def lambda_handler(event, context):
     users = get_users()
