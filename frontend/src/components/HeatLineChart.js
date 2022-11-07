@@ -23,34 +23,25 @@ ChartJS.register(
 
 function getColorForZVal(zVal, maxZ, minZ, opacity) {
   const GREEN = [0, 255, 0];
+  const GREENISH = [200, 255, 0 ];
+  const YELLOW = [245, 245, 0];
   const RED = [255, 0, 0];
   
-  const dirVec = [
-    RED[0] - GREEN[0],
-    RED[1] - GREEN[1],
-    RED[2] - GREEN[2]
-  ];
-
   const heat = maxZ !== minZ ? (zVal - minZ) / (maxZ - minZ) : 0;
-  let heatBin = 0;
+  let color = GREEN;
   if (heat >= 0 && heat < 0.25) {
-    heatBin = 0;
+    color = GREEN;
   } else if (heat >= 0.25 && heat < 0.5) {
-    heatBin = 0.333;
+    color = GREENISH;
   } else if (heat >= 0.5 && heat < 0.75) {
-    heatBin = 0.677;
+    color = YELLOW;
   } else if (heat >= 0.75 && heat < 1) {
-    heatBin = 1;
+    color = RED;
   } else {
-    heatBin = 1;
+    color = RED;
   }
 
-  const colorVec = [
-    GREEN[0] + heatBin*dirVec[0],
-    GREEN[1] + heatBin*dirVec[1],
-    GREEN[2] + heatBin*dirVec[2]
-  ];
-  return `rgba(${colorVec[0]}, ${colorVec[1]}, ${colorVec[2]}, ${opacity})`
+  return `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${opacity})`
 }
 
 export default function HeatLineChart(props) {
