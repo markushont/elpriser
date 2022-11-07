@@ -14,64 +14,68 @@ class DecimalEncoder(json.JSONEncoder):
             return str(obj)
         return json.JSONEncoder.default(self, obj)
 
-def get_user(username):
-    user_table = dynamodb.Table('electricityPricesAuth')
-    
-    return user_table.get_item(
-        Key={'user_name': username}
-    )['Item']
+def get_30_day_summary(data):
+    summary = {}
+    for key, group in groupby(data, key=lambda x: x['user_date']):
+        date = key.split(':')[1]
+        group_data = list(group)
+        summary[date] = {
+            'consumption_tot': round(
+                sum(
+                    [
+                        float(g['consumption'])
+                        for g in group_data
+                    ]
+                ),
+                2
+            ),
+            'consumption_avg': round(
+                mean(
+                    [
+                        float(g['consumption'])
+                        for g in group_data
+                    ]
+                ),
+                2
+            ),
+            'cost_tot': round(
+                sum(
+                    [
+                        float(g['consumption']) * (float(g['unit_price']) + float(g['unit_price_vat']))
+                        for g in group_data
+                    ]
+                ),
+                2
+            )
+        }
+        summary[date]['price_avg'] = round(summary[date]['cost_tot'] / summary[date]['consumption_tot'], 2)
+    return summary
 
 def lambda_handler(event, context):
     today = datetime.now().date()
     range_start = today - timedelta(days=30)
     username = event['pathParameters']['username']
-    user = get_user(username)
 
-    summary = {
-        '30_day_summary': {}
-    }
-
-    prices_table = dynamodb.Table('electricityPrices')
-    prices_response = prices_table.scan(
-        FilterExpression=Key('date').between(f"{user['area']}:{range_start}", f"{user['area']}:{today}")
-    )
-    
-    for key, group in groupby(prices_response['Items'], key=lambda x: x['date']):
-        date = key.split(':')[1]
-        group_data = list(group)
-        summary['30_day_summary'][date] = {
-            'price_avg': round(mean([float(g['total']) for g in group_data]), 2),
-            'price_tot': round(sum([float(g['total']) for g in group_data]), 2)
-        }
-    
-    summary['price_avg_daily'] = round(
-        mean([
-            d['price_avg']
-            for date, d in summary['30_day_summary'].items()
-            if 'price_avg' in d
-        ]),
-        2)
-    
     consumption_table = dynamodb.Table('electricityConsumption')
     consumption_response = consumption_table.scan(
         FilterExpression=Key('user_date').between(f"{username}:{range_start}", f"{username}:{today}")
     )
     
-    for key, group in groupby(consumption_response['Items'], key=lambda x: x['user_date']):
-        date = key.split(':')[1]
-        group_data = list(group)
-        summary['30_day_summary'][date]['consumption_tot'] = \
-            round(sum([float(g['consumption']) for g in group_data]), 2)
-        summary['30_day_summary'][date]['cost_tot'] = \
-            round(sum([ float(g['consumption']) * (float(g['unit_price']) + float(g['unit_price_vat'])) for g in group_data]), 2)
-        summary['30_day_summary'][date]['consumption_avg'] = \
-            round(mean([float(g['consumption']) for g in group_data]), 2)
+    summary = {}
+    summary['30_day_summary'] = get_30_day_summary(consumption_response['Items'])
     
+    summary['price_avg_daily'] = round(
+        mean([
+            d['price_avg']
+            for _, d in summary['30_day_summary'].items()
+            if 'price_avg' in d
+        ]),
+        2)
     summary['consumption_avg_daily'] = round(
         mean(
         [
             d['consumption_tot']
-            for date, d in summary['30_day_summary'].items()
+            for _, d in summary['30_day_summary'].items()
             if 'consumption_avg' in d
         ]), 
         2)
@@ -79,7 +83,7 @@ def lambda_handler(event, context):
         sum(
         [
             d['cost_tot']
-            for date, d in summary['30_day_summary'].items()
+            for _, d in summary['30_day_summary'].items()
             if 'cost_tot' in d
         ]),
         2)
