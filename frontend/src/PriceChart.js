@@ -67,7 +67,8 @@ export default function PriceChart(props) {
 
   const axisConfig = {
     y: {
-      max: globalMaxY
+      max: globalMaxY,
+      min: 0
     }
   }
 
