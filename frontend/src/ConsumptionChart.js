@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import HeatLineChart from "./components/HeatLineChart";
 import SingleValueunitAndDescription from "./components/SingleValueUnitAndDescription";
+import withTitle from "./withTitle";
 
 function parseConsumptionData(consumptionData) {
   return {
@@ -17,7 +18,7 @@ function parseConsumptionData(consumptionData) {
   }
 }
 
-export default function ConsumptionChart(props) {
+function ConsumptionChart(props) {
   const DATE_ENCODING = 'sv-SE';
   const yesterdayDate = ( d => new Date(d.setDate(d.getDate()-1)) )(new Date());
   
@@ -74,3 +75,8 @@ export default function ConsumptionChart(props) {
     </div>
   )
 }
+
+export default withTitle(
+  ConsumptionChart,
+  "Elpriser!! | Förbrukning"
+)

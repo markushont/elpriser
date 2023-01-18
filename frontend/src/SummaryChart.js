@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 
 import SingleValueAndDescription from "./components/SingleValueUnitAndDescription";
 import StackedBarChart from "./components/StackedBarChart";
+import withTitle from "./withTitle";
 
 function parseSummaryData(summaryData) {
   return {
@@ -34,7 +35,7 @@ function parseSummaryData(summaryData) {
   }
 }
 
-export default function SummaryChart(props) {
+function SummaryChart(props) {
   const [chartData, setChartData] = useState({
     avg_price: 0,
     avg_consumption: 0,
@@ -73,3 +74,8 @@ export default function SummaryChart(props) {
     </div>
   )
 }
+
+export default withTitle(
+  SummaryChart,
+  "Elpriser!! | Sammanfattning"
+)

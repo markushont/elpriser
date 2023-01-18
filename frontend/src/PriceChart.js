@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 
 import DatePicker from "react-datepicker";
 import LineChart from './components/GradientLineChart';
+import withTitle from './withTitle';
 
 function parseData(data) {
   return {
@@ -29,7 +30,7 @@ function parseData(data) {
   }
 }
 
-export default function PriceChart(props) {
+function PriceChart(props) {
   const DATE_ENCODING = 'sv-SE';
 
   const [data, setData] = useState({
@@ -97,3 +98,8 @@ export default function PriceChart(props) {
     </div>
   )
 }
+
+export default withTitle(
+  PriceChart,
+  "Elpriser!!"
+);
